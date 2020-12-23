@@ -339,7 +339,7 @@
                     <downloadJavadocs>true</downloadJavadocs>
                     <wtpversion>2.0</wtpversion>
                     <sourceIncludes>
-                        <sourceInclude>**/*.*</sourceInclude>
+                        <sourceInclude>*/.*</sourceInclude>
                     </sourceIncludes>
                     <additionalBuildcommands>
                         <buildCommand>
