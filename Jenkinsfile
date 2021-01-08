@@ -22,7 +22,7 @@ pipeline {
 					junit 'target/surefire-reports/*.xml'
 				}
 			}
-			stage('artifact nexus uploader')
+			stage('artifact nexus uploader') {
 			steps {
 				nexusArtifactUploader artifacts: [[artifactId: 'spring-petclinic',
 			        classifier: '', file: 'target/petclinic.war', type: 'war']],
@@ -35,6 +35,8 @@ pipeline {
 				version: "4.2.${BUILD_NUMBER}"
 			}
 		}
+	}
+
 post {
 		always {
 			notify('started')
