@@ -23,7 +23,7 @@ pipeline {
 			       		classifier: '', file: 'target/petclinic.war', type: 'war']],
 					credentialsId: '4f228bd9-8eca-456f-b65b-69e6efeeca7c',
 					groupId: 'org.springframework.samples',
-					nexusUrl: '18.224.199.231:8081/nexus',
+					nexusUrl: '18.222.138.16:8081/nexus',
 					nexusVersion: 'nexus2',
 					protocol: 'http',
 					repository: 'releases',
@@ -43,6 +43,7 @@ pipeline {
 
         			sh '''
                     	 		cd ansible
+					whoami
                      	 		ansible-playbook -i production -e "BUILD_No=${BUILD_NUMBER}" site.yml
         			'''
 
