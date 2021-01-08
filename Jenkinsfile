@@ -42,8 +42,8 @@ pipeline {
         				userRemoteConfigs: [[url: 'https://github.com/aasush/tomcat-ansible.git']]])
 
         			sh '''
-                    	 	cd ansible
-                     	 	sudo ansible-playbook -i production -e "BUILD_No=${BUILD_NUMBER}" site.yml
+                    	 		cd ansible
+                     	 		ansible-playbook -i production -e "BUILD_No=${BUILD_NUMBER}" site.yml
         			'''
 
            			}
