@@ -1,103 +1,46 @@
 pipeline {
-	agent any
-	tools {
-		maven 'M3.6'
-	}
-	stages {
-    	// stage('My Parallel stages') {
-    	//	parallel {
-    			/* stage('SonarQube analysis') { 
-    				steps {
-						withSonarQubeEnv('Sonar') { 
-						sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.3.0.603:sonar ' + 
-						'-Dsonar.projectKey=com.petclinic:all:master ' +
-						'-Dsonar.language=java ' +
-						'-Dsonar.sources=. ' +
-						'-Dsonar.tests=. '
-						}
-					}
-				} */
-				stage('Build') {
-					steps {
-    					sh 'mvn clean package'
-    				}
-				}
-			//}
-		//}
+	agent any 
 
-		/* stage('Check Quality gates') {
-			steps {
-				script {
-					timeout(time: 1, unit: 'HOURS') {
-					sleep 30
-					def qg = waitForQualityGate() 
-						if (qg.status != 'OK') {
-							error "Pipeline aborted due to quality gate failure: ${qg.status}"
-						}
-					}
+		stages {
+			stage('checkout') {
+				steps {
+					git "https://github.com/aasush/petclinic.git"
 				}
 			}
-		} */
-		stage('Post Build Actions') {
-    		parallel {
-				stage('Archive') {
-					steps {
-						archiveArtifacts artifacts: 'target/*.?ar', followSymlinks: false
-					}	
+			stage('build') {
+				steps {
+					sh 'mvn clean package'
 				}
-				stage('Unit tests') {
-					steps {
-						junit 'target/surefire-reports/*.xml'
-					}
+			}
+			stage('archival') {
+				steps {
+					archiveArtifacts 'target/*.war'
 				}
-				stage('Artifact Uploader') {
-					steps {
-						// nexusArtifactUploader artifacts: [[artifactId: 'spring-petclinic', classifier: '', file: 'target/petclinic.war', type: 'war']], credentialsId: 'nexusID', groupId: 'org.springframework.samples', nexusUrl: '18.188.206.92:8081/nexus', nexusVersion: 'nexus2', protocol: 'http', repository: 'releases', version: '4.2'
-					nexusArtifactUploader artifacts: [[artifactId: 'spring-petclinic', classifier: '', file: 'target/petclinic.war', type: 'war']], credentialsId: 'nexusid', groupId: 'org.springframework.samples', nexusUrl: '3.17.60.125:8081/nexus', nexusVersion: 'nexus2', protocol: 'http', repository: 'releases', version: "4.2.${BUILD_NUMBER}"
-					}
+			}
+			stage('junit test cases') {
+				steps {
+					junit 'target/surefire-reports/*.xml'
 				}
 			}
 		}
-		stage('Deploy') {
-			input {
-                		message "Should we continue?"
-                		ok "Yes, we should."
-            		}
-			steps {
-				// git 'https://github.com/akmaharshi/tomcat-standalone.git'
-				checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, 
-                                          extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'ansible']], submoduleCfg: [], 
-        				userRemoteConfigs: [[url: 'https://github.com/akmaharshi/tomcat-standalone.git']]])
-				
-				withCredentials([string(credentialsId: 'ansi_vault_pass', variable: 'MYPASS')]) {
-					sh '''
-						echo $MYPASS
-						echo $MYPASS > ~/.vault_pass.txt
-						export ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt
-						cd ansible
-						sudo ansible-playbook -i production -e "BUILD_NO=${BUILD_NUMBER}" --vault-id ~/.vault_pass.txt site.yml 
-					'''
-				}
-			}
-		}
-	}
-	post {
-		success {
-			notify('Success')
+post {
+		always {
+			notify('started')
 		}
 		failure {
-			notify('Failed')
+			notify('err')
 		}
-		aborted {
-			notify('Aborted')
+		success {
+			notify('success')
 		}
 	}
 }
 
+
 def notify(status) {
-	emailext (
-		to: 'devops.kphb@gmail.com',
-		subject: "JOB:${env.JOB_NAME} with Build: ${env.BUILD_ID} ${status}", 
-		body: "${status} - ${env.BUILD_URL}"
-	)
-}
+			emailext (
+				to: 'aasushdisney@gmail.com',
+			    subject: "${status}: JOB:'${env.JOB_NAME} job ${env.JOB_ID}: ${env.JENKINS_HOME}: ${env.BUILD_ID}: --${status}'",
+				body: "Please go to ${BUILD_URL} and verify the build"
+			)
+		}
