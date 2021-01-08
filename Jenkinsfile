@@ -43,7 +43,7 @@ pipeline {
 
         			sh '''
                     	 	cd ansible
-                     	 	ansible-playbook -i production -e "BUILD_No=${BUILD_NUMBER}" site.yml
+                     	 	sudo ansible-playbook -i production -e "BUILD_No=${BUILD_NUMBER}" site.yml
         			'''
 
            			}
