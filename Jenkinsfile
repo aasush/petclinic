@@ -2,11 +2,6 @@ pipeline {
 	agent any 
 
 		stages {
-			stage('checkout') {
-				steps {
-					git "https://github.com/aasush/petclinic.git"
-				}
-			}
 			stage('build') {
 				steps {
 					sh 'mvn clean package'
