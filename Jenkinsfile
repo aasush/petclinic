@@ -39,10 +39,10 @@ pipeline {
            			steps {
            				checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, 
                 		        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'ansible']], submoduleCfg: [], 
-        				userRemoteConfigs: [[url: 'https://github.com/aasush/tomcat-ansible.git']]])
+        				userRemoteConfigs: [[url: 'https://github.com/aasush/tomcat-deploy.git']]])
 
         			sh '''
-                    	 		cd ansible
+                    	 		cd tomcat-deploy
 					whoami
                      	 		ansible-playbook -i production -e "BUILD_No=${BUILD_NUMBER}" site.yml
         			'''
