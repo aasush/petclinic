@@ -23,7 +23,7 @@ pipeline {
 					file: 'target/petclinic.war', type: 'war']],
 					credentialsId: '3cbba732-bacb-4fa9-9d37-7c1a634ec4dd',
 					groupId: 'org.springframework.samples', 
-					nexusUrl: '18.188.144.109:8081/nexus', 
+					nexusUrl: '18.216.91.192:8081/nexus', 
 					nexusVersion: 'nexus2',
 					protocol: 'http',
 					repository: 'releases', 
